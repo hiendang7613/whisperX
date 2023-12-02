@@ -72,8 +72,8 @@ class WhisperModel(faster_whisper.WhisperModel):
         }
         from onnxruntime import InferenceSession
 
-        onnx_path='/Users/apple/Downloads/whisper-large-v3_beamsearch.onnx'
-        sess = InferenceSession(onnx_path, providers=["CPUExecutionProvider"])
+        onnx_path='/content/whisper-large-v3_beamsearch.onnx'
+        sess = InferenceSession(onnx_path, providers=["CUDAExecutionProvider"])
 
         out = sess.run(None, ort_inputs)[0]
         text = processor.batch_decode(out[0], skip_special_tokens=True)[0]
