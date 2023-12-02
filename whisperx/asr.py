@@ -50,27 +50,57 @@ class WhisperModel(faster_whisper.WhisperModel):
             round(options.max_initial_timestamp / self.time_precision)
         )
 
-        result = self.model.generate(
-                encoder_output,
-                [prompt] * batch_size,
-                beam_size=options.beam_size,
-                patience=options.patience,
-                length_penalty=options.length_penalty,
-                max_length=self.max_length,
-                suppress_blank=options.suppress_blank,
-                suppress_tokens=options.suppress_tokens,
-            )
 
-        tokens_batch = [x.sequences_ids[0] for x in result]
 
-        def decode_batch(tokens: List[List[int]]) -> str:
-            res = []
-            for tk in tokens:
-                res.append([token for token in tk if token < tokenizer.eot])
-            # text_tokens = [token for token in tokens if token < self.eot]
-            return tokenizer.tokenizer.decode_batch(res)
+        # ---
+        from transformers import GenerationConfig
 
-        text = decode_batch(tokens_batch)
+        generation_config = GenerationConfig.from_pretrained("openai/whisper-large-v3")
+
+        # input_shape = [1, N_MELS, N_FRAMES]
+        ort_inputs = {
+            "input_features": np.array(features, dtype=np.float32),
+            "decoder_input_ids": [prompt] * batch_size ,
+            "max_length": self.max_length,
+            "min_length": np.array([0], dtype=np.int32),
+            "num_beams": options.beam_size,
+            "num_return_sequences": np.array([1], dtype=np.int32),
+            "length_penalty": options.length_penalty,
+            "repetition_penalty": generation_config.repetition_penalty,
+            # "decoder_input_ids": np.array([[50258, 50364, 50258, 50278, 50360, 50364, 50257]], dtype=np.int32) ,
+            # "attention_mask": np.zeros(input_shape).astype(np.int32),
+        }
+        from onnxruntime import InferenceSession
+
+        onnx_path='/Users/apple/Downloads/whisper-large-v3_beamsearch.onnx'
+        sess = InferenceSession(onnx_path, providers=["CPUExecutionProvider"])
+
+        out = sess.run(None, ort_inputs)[0]
+        text = processor.batch_decode(out[0], skip_special_tokens=True)[0]
+
+        # ---
+
+        # result = self.model.generate(
+        #         encoder_output,
+        #         [prompt] * batch_size,
+        #         # beam_size=options.beam_size,
+        #         patience=options.patience,
+        #         # length_penalty=options.length_penalty,
+        #         # max_length=self.max_length,
+        #         suppress_blank=options.suppress_blank,
+        #         suppress_tokens=options.suppress_tokens,
+        #     )
+
+        # tokens_batch = [x.sequences_ids[0] for x in result]
+
+        # def decode_batch(tokens: List[List[int]]) -> str:
+        #     res = []
+        #     for tk in tokens:
+        #         res.append([token for token in tk if token < tokenizer.eot])
+        #     # text_tokens = [token for token in tokens if token < self.eot]
+        #     return tokenizer.tokenizer.decode_batch(res)
+
+        # text = decode_batch(tokens_batch)
 
         return text
 
