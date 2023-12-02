@@ -60,13 +60,13 @@ class WhisperModel(faster_whisper.WhisperModel):
         # input_shape = [1, N_MELS, N_FRAMES]
         ort_inputs = {
             "input_features": np.array(features, dtype=np.float32),
-            "decoder_input_ids": [prompt] * batch_size ,
-            "max_length": self.max_length,
+            "decoder_input_ids": np.array([prompt] * batch_size) ,
+            "max_length": np.array(self.max_length),
             "min_length": np.array([0], dtype=np.int32),
-            "num_beams": options.beam_size,
+            "num_beams": np.array(options.beam_size),
             "num_return_sequences": np.array([1], dtype=np.int32),
-            "length_penalty": options.length_penalty,
-            "repetition_penalty": generation_config.repetition_penalty,
+            "length_penalty": np.array(options.length_penalty),
+            "repetition_penalty": np.array(generation_config.repetition_penalty),
             # "decoder_input_ids": np.array([[50258, 50364, 50258, 50278, 50360, 50364, 50257]], dtype=np.int32) ,
             # "attention_mask": np.zeros(input_shape).astype(np.int32),
         }
