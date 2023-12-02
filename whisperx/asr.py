@@ -60,23 +60,38 @@ class WhisperModel(faster_whisper.WhisperModel):
         # input_shape = [1, N_MELS, N_FRAMES]
         ort_inputs = {
             "input_features": np.array(features, dtype=np.float32),
-            "decoder_input_ids": np.array([prompt] * batch_size) ,
-            "max_length": np.array(self.max_length),
+            "decoder_input_ids": np.array([prompt] * batch_size, dtype=np.int32) ,
+            "max_length": np.array([self.max_length], dtype=np.int32),
             "min_length": np.array([0], dtype=np.int32),
-            "num_beams": np.array(options.beam_size),
+            "num_beams": np.array([options.beam_size], dtype=np.int32),
             "num_return_sequences": np.array([1], dtype=np.int32),
-            "length_penalty": np.array(options.length_penalty),
-            "repetition_penalty": np.array(generation_config.repetition_penalty),
+            "length_penalty": np.array([options.length_penalty], dtype=np.float32),
+            "repetition_penalty": np.array([generation_config.repetition_penalty], dtype=np.float32),
             # "decoder_input_ids": np.array([[50258, 50364, 50258, 50278, 50360, 50364, 50257]], dtype=np.int32) ,
             # "attention_mask": np.zeros(input_shape).astype(np.int32),
         }
+        # for x, y in ort_inputs.items():
+        #   print(y.dtype)
         from onnxruntime import InferenceSession
+        from transformers import WhisperProcessor
 
         onnx_path='/content/whisper-large-v3_beamsearch.onnx'
         sess = InferenceSession(onnx_path, providers=["CUDAExecutionProvider"])
 
-        out = sess.run(None, ort_inputs)[0]
-        text = processor.batch_decode(out[0], skip_special_tokens=True)[0]
+        out = sess.run(None, ort_inputs)
+        print(out)
+        # out=out[0]
+
+        # def decode_batch(tokens: List[List[int]]) -> str:
+        #     res = []
+        #     for tk in tokens:
+        #         res.append([token for token in tk if token < tokenizer.eot])
+        #     # text_tokens = [token for token in tokens if token < self.eot]
+        #     return tokenizer.tokenizer.decode_batch(res)
+        # text = decode_batch(out[0])
+        processor = WhisperProcessor.from_pretrained("openai/whisper-large-v3", language='vi', task="transcribe")
+
+        text = processor.batch_decode(out[0][0], skip_special_tokens=True)
 
         # ---
 
