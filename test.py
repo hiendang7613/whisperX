@@ -6,8 +6,8 @@
 
 import whisperx
 
-device = "cpu"
-audio_file = "/Users/apple/Downloads/vi_vocals (1) (mp3cut.net).wav"
+device = "cuda"
+audio_file = "/content/vi_vocals (1) (mp3cut.net).wav"
 
 modelx = whisperx.load_model("large-v3", device, compute_type="float32", language='vi') #medium
 print('model loaded')
