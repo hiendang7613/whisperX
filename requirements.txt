@@ -1,6 +1,0 @@
-torch>=2
-torchaudio>=2
-transformers
-pandas
-setuptools>=65
-nltk
