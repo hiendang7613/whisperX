@@ -190,7 +190,7 @@ class WhisperPipeline(Pipeline):
         return segments
 
 
-def load_model(language='vi'):
+def load_model():
     vad_model = load_vad_model(torch.device('cuda'), 
       model_fp='/content/whisperx-vad-segmentation.bin',
      **default_vad_options)
@@ -201,7 +201,4 @@ def load_model(language='vi'):
         vad=vad_model,
         options=default_asr_options,
         tokenizer=tokenizer,
-        # language=language,
-        # suppress_numerals=default_asr_options["suppress_numerals"],
-        # vad_params=default_vad_options,
     )
