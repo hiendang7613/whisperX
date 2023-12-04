@@ -16,7 +16,7 @@ from tqdm import tqdm
 # from .diarize import Segment as SegmentX
 
 
-class Segment:
+class SegmentX:
     def __init__(self, start, end, speaker=None):
         self.start = start
         self.end = end
