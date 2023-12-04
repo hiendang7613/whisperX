@@ -49,7 +49,7 @@ onnx_path='/content/whisper-large-v3_beamsearch.onnx'
 generation_config = GenerationConfig.from_pretrained("openai/whisper-large-v3")
 repetition_penalty=generation_config.repetition_penalty
 sess = InferenceSession(onnx_path, providers=["CUDAExecutionProvider"])
-processor = WhisperProcessor.from_pretrained("openai/whisper-large-v3", language='vi', task="transcribe")
+processor = WhisperProcessor.from_pretrained("openai/whisper-large-v3")
 
 def find_numeral_symbol_tokens(tokenizer):
     numeral_symbol_tokens = []
