@@ -1,10 +1,10 @@
-import hashlib
-import os
-import urllib
+# import hashlib
+# import os
+# import urllib
 from typing import Callable, Optional, Text, Union
 
 import numpy as np
-import pandas as pd
+# import pandas as pd
 import torch
 from pyannote.audio import Model
 from pyannote.audio.core.io import AudioFile
@@ -13,7 +13,14 @@ from pyannote.audio.pipelines.utils import PipelineModel
 from pyannote.core import Annotation, Segment, SlidingWindowFeature
 from tqdm import tqdm
 
-from .diarize import Segment as SegmentX
+# from .diarize import Segment as SegmentX
+
+
+class Segment:
+    def __init__(self, start, end, speaker=None):
+        self.start = start
+        self.end = end
+        self.speaker = speaker
 
 def load_vad_model(device, vad_onset=0.500, vad_offset=0.363, model_fp=None):
     vad_model = Model.from_pretrained(model_fp, use_auth_token=None)
