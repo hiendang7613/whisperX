@@ -11,7 +11,6 @@ from transformers.pipelines.pt_utils import PipelineIterator
 
 from .audio import N_SAMPLES, SAMPLE_RATE, load_audio, log_mel_spectrogram
 from .vad import load_vad_model, merge_chunks
-from .types import TranscriptionResult, SingleSegment
 
 from transformers import GenerationConfig
 from onnxruntime import InferenceSession
@@ -143,7 +142,7 @@ class FasterWhisperPipeline(Pipeline):
 
     def transcribe(
         self, audio: Union[str, np.ndarray], batch_size=None, num_workers=0, language='vi', task='transcribe', chunk_size=30, print_progress = False, combined_progress=False
-    ) -> TranscriptionResult:
+    ):
         def data(audio, segments):
             for seg in segments:
                 f1 = int(seg['start'] * SAMPLE_RATE)
@@ -158,7 +157,7 @@ class FasterWhisperPipeline(Pipeline):
             offset=self._vad_params["vad_offset"],
         )
 
-        segments: List[SingleSegment] = []
+        segments = []
         batch_size = batch_size or self._batch_size
         total_segments = len(vad_segments)
         for idx, out in enumerate(self.__call__(data(audio, vad_segments), batch_size=batch_size, num_workers=num_workers)):
