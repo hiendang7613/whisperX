@@ -1,13 +1,6 @@
-# from transformers import GenerationConfig
-
-# # Download configuration from huggingface.co and cache.
-# generation_config = GenerationConfig.from_pretrained("openai/whisper-large-v3")
-# print(generation_config.__dict__.keys())
-
 import whisperx
 
-device = "cpu"
-audio_file = "path"
+audio_file = "/content/vi_vocals.wav"
 
 modelx = whisperx.load_model()
 print('model loaded')
