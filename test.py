@@ -1,6 +1,6 @@
 import whisperx
 
-audio_file = "/content/vi_vocals.wav"
+audio_file = "/content/htdemus-export/output/quan-hoc_vocals.wav"
 
 modelx = whisperx.load_model()
 print('model loaded')
