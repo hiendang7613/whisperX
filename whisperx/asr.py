@@ -72,9 +72,9 @@ def inference_func(features, options):
         "num_return_sequences": np.array([1], dtype=np.int32),
         "length_penalty": np.array([1], dtype=np.float32),
         "repetition_penalty": np.array([repetition_penalty], dtype=np.float32),
-        "decoder_input_ids": np.array([[50258, 50278, 50360, 50364]] * batch_size , dtype=np.int32) ,
+        "decoder_input_ids": np.array([[50358, 50363]] * batch_size , dtype=np.int32) ,
         # "decoder_input_ids": np.array([[50258, 50364, 50258, 50278, 50360, 50364, 50257]]* batch_size, dtype=np.int32) ,
-        # "attention_mask": np.zeros(input_shape).astype(np.int32),
+        # "attention_mask": np.zeros(input_shape).astype(np.int32), 
     }
 
     out = sess.run(None, ort_inputs)[0]
